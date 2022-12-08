@@ -1,11 +1,12 @@
 package com.phonepe.paymentgateway.client;
 
-import com.phonepe.paymentgateway.BankType;
-import com.phonepe.paymentgateway.bank.Bank;
 import com.phonepe.paymentgateway.mode.Mode;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Repository
 public class ClientRepositoryImpl implements ClientRepository {
@@ -13,22 +14,15 @@ public class ClientRepositoryImpl implements ClientRepository {
     private Map<Long, Client> clients = new HashMap<>();
 
     @Override
-    public Client addClient(String name, Set<Mode> modes) {
+    public Client addClient(String name, Set<Mode> modes, List<ClientBankAccount> acquiringAccounts) {
         Long clientId = Long.valueOf(clients.size());
         Client client = Client
                 .builder()
                 .id(clientId)
                 .modeOfPayments(modes)
+                .acquiringBankAccounts(acquiringAccounts)
                 .name(name)
                 .build();
-
-
-        List<ClientBankAccount> clientAccounts = Arrays.asList(
-                new ClientBankAccount(0L, new Bank(0L, "HDFC Bank", BankType.HDFC), "123", "Flipkart Corp", "Kormangala, Bangalore", "ABC123"),
-                new ClientBankAccount(1L, new Bank(1L, "ICICI Bank", BankType.ICICI), "456", "Flipkart Corp", "Kormangala, Bangalore", "ABC123"),
-                new ClientBankAccount(2L, new Bank(2L, "SBI Bank", BankType.SBI), "789", "Flipkart Corp", "Kormangala, Bangalore", "ABC123")
-        );
-        client.setAcquiringBankAccounts(clientAccounts);
 
         clients.put(clientId, client);
         return client;

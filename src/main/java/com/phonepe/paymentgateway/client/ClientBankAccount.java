@@ -2,7 +2,6 @@ package com.phonepe.paymentgateway.client;
 
 import com.phonepe.paymentgateway.bank.Bank;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 
 @Data

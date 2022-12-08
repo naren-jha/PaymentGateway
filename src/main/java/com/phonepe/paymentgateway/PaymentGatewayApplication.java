@@ -1,6 +1,9 @@
 package com.phonepe.paymentgateway;
 
+import com.phonepe.paymentgateway.bank.Bank;
+import com.phonepe.paymentgateway.bank.BankType;
 import com.phonepe.paymentgateway.client.Client;
+import com.phonepe.paymentgateway.client.ClientBankAccount;
 import com.phonepe.paymentgateway.client.ClientService;
 import com.phonepe.paymentgateway.mode.Mode;
 import com.phonepe.paymentgateway.mode.PaymentModeService;
@@ -13,7 +16,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @SpringBootApplication
 @Slf4j
@@ -38,10 +40,17 @@ public class PaymentGatewayApplication {
 		Set<Mode> modeOfPayments = new HashSet<>();
 		modeOfPayments.add(Mode.CREDIT_CARD);
 		modeOfPayments.add(Mode.DEBIT_CARD);
-		Client flipkartClient = clientService.addClient("flipkart", modeOfPayments);
+
+		List<ClientBankAccount> clientAccounts = Arrays.asList(
+				new ClientBankAccount(0L, new Bank(0L, "HDFC Bank", BankType.HDFC), "123", "Flipkart Corp", "Kormangala, Bangalore", "ABC123"),
+				new ClientBankAccount(1L, new Bank(1L, "ICICI Bank", BankType.ICICI), "456", "Flipkart Corp", "Kormangala, Bangalore", "ABC123"),
+				new ClientBankAccount(2L, new Bank(2L, "SBI Bank", BankType.SBI), "789", "Flipkart Corp", "Kormangala, Bangalore", "ABC123")
+		);
+
+		Client flipkartClient = clientService.addClient("flipkart", modeOfPayments, clientAccounts);
 		log.info("client added: {} ", flipkartClient);
 
-		Client snapDealClient = clientService.addClient("snapdeal", Arrays.stream(Mode.values()).collect(Collectors.toSet()));
+		Client snapDealClient = clientService.addClient("snapdeal", null, null);
 		log.info("client added: {} ", snapDealClient);
 
 		boolean res = clientService.hasClient(flipkartClient.getId());
@@ -62,7 +71,6 @@ public class PaymentGatewayApplication {
 		res = clientService.hasClient(snapDealClient.getId());
 		msg = snapDealClient.getName() + (res ? " client exists" : " client doesn't exist");
 		log.info(msg);
-
 
 		// Mode of payments operations
 		Set<Mode> genericModesOfPayments = new HashSet<>();
@@ -98,7 +106,9 @@ public class PaymentGatewayApplication {
 		log.info("updated supported modes of payment for client {} are {}", flipkartClient.getName(), supportedPayModes);
 
 		// distribution
-
+		List<String> distribution = paymentService.showDistribution();
+		log.info("distribution:- ");
+		distribution.forEach(dist -> log.info(dist));
 
 		// make payment
 		PaymentIssuingAccount issuer = PaymentIssuingAccount

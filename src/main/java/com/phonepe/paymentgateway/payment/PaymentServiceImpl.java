@@ -1,6 +1,8 @@
 package com.phonepe.paymentgateway.payment;
 
 import com.phonepe.paymentgateway.bank.BankService;
+import com.phonepe.paymentgateway.bank.BankType;
+import com.phonepe.paymentgateway.bank.PaymentBankResponse;
 import com.phonepe.paymentgateway.bank.strategy.BankSelectionResponse;
 import com.phonepe.paymentgateway.bank.strategy.BankSelectionStrategyFactory;
 import com.phonepe.paymentgateway.bank.strategy.BankSelectionStrategyType;
@@ -15,13 +17,13 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @Slf4j
 public class PaymentServiceImpl implements PaymentService {
 
-    private final BankSelectionStrategyType bankSelectionStrategyType = BankSelectionStrategyType.MODE_BASED;
+    private final BankSelectionStrategyType bankSelectionStrategyType = BankSelectionStrategyType.PERCENTAGE;
 
     @Autowired
     private BankSelectionStrategyFactory bankSelectionStrategyFactory;
@@ -29,8 +31,30 @@ public class PaymentServiceImpl implements PaymentService {
     @Autowired
     private ClientService clientService;
 
+    @Autowired
+    private TransactionRepository transactionRepository;
+
+    // distribution config
+    @Autowired
+    private Map<Mode, BankType> modeToBankTypeMap;
+
+    @Autowired
+    private Map<BankType, Integer> bankToPercentageMap;
+
     @Override
-    public void makePayment(Mode mode, PaymentIssuingAccount issuingAccount, double amount, Long clientId) {
+    public List<String> showDistribution() {
+        List<String> distribution = new ArrayList<>();
+        for (Mode mode : modeToBankTypeMap.keySet()) {
+            distribution.add(String.format("All payments of %s will go to %s bank", mode, modeToBankTypeMap.get(mode)));
+        }
+        for (BankType bankType : bankToPercentageMap.keySet()) {
+            distribution.add(String.format("%d percent of total payments will go to %s", bankToPercentageMap.get(bankType), bankType));
+        }
+        return distribution;
+    }
+
+    @Override
+    public Transaction makePayment(Mode mode, PaymentIssuingAccount issuingAccount, double amount, Long clientId) {
         validateRequest(mode, issuingAccount, amount);
         Client client = clientService.getById(clientId);
         if (Objects.isNull(client)) {
@@ -45,7 +69,13 @@ public class PaymentServiceImpl implements PaymentService {
 
         BankService bankService = bankSelectionResponse.getBankService();
         ClientBankAccount acquiringAccount = bankSelectionResponse.getSelectedAccount();
-        bankService.makePayment(issuingAccount, acquiringAccount, amount);
+        PaymentBankResponse paymentBankResponse = bankService.makePayment(issuingAccount, acquiringAccount, amount);
+
+        Transaction transaction = null;
+        if (paymentBankResponse.isStatus()) {
+            transaction = transactionRepository.saveTransaction(issuingAccount, acquiringAccount, amount);
+        }
+        return transaction;
     }
 
     private void validateRequest(Mode mode, PaymentIssuingAccount issuingAccount, double amount) {
@@ -70,7 +100,7 @@ public class PaymentServiceImpl implements PaymentService {
             if (Strings.isBlank(issuingAccount.getCardCvv())) {
                 throw new InvalidPaymentInputException("card CVV is required for credit/debit card mode of payment!");
             }
-            if (issuingAccount.getCardCvv().length() != 3 || is3DigitNumber(issuingAccount.getCardCvv())) {
+            if (!is3DigitNumber(issuingAccount.getCardCvv())) {
                 throw new InvalidPaymentInputException("invalid CVV!");
             }
         }

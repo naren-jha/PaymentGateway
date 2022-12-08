@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -14,8 +15,8 @@ public class ClientServiceImpl implements ClientService {
     private ClientRepository clientRepository;
 
     @Override
-    public Client addClient(String name, Set<Mode> modes) {
-        return clientRepository.addClient(name, modes);
+    public Client addClient(String name, Set<Mode> modes, List<ClientBankAccount> acquiringAccounts) {
+        return clientRepository.addClient(name, modes, acquiringAccounts);
     }
 
     @Override

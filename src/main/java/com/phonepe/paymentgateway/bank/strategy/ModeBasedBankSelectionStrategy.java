@@ -1,17 +1,12 @@
 package com.phonepe.paymentgateway.bank.strategy;
 
-import com.phonepe.paymentgateway.BankType;
+import com.phonepe.paymentgateway.bank.BankType;
 import com.phonepe.paymentgateway.bank.BankService;
-import com.phonepe.paymentgateway.bank.HDFCBankService;
-import com.phonepe.paymentgateway.bank.ICICIBankService;
-import com.phonepe.paymentgateway.bank.SBIBankService;
 import com.phonepe.paymentgateway.client.ClientBankAccount;
 import com.phonepe.paymentgateway.mode.Mode;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -29,6 +24,7 @@ public class ModeBasedBankSelectionStrategy implements BankSelectionStrategy {
 
     @Override
     public BankSelectionResponse selectBank(Mode mode, List<ClientBankAccount> bankAccounts) {
+        log.info("Applying mode based bank selection strategy");
         Map<BankType, ClientBankAccount> bankTypeToAccountMap = new HashMap<>();
         bankAccounts.forEach(acc -> bankTypeToAccountMap.put(acc.getBank().getType(), acc));
 
@@ -39,7 +35,7 @@ public class ModeBasedBankSelectionStrategy implements BankSelectionStrategy {
         // set acquiring bank account of client
         ClientBankAccount selectedClientAcc = bankTypeToAccountMap.get(selectedBankType);
         if (Objects.isNull(selectedClientAcc)) {
-            // when client doesn't have account of target type
+            // when client doesn't have account of selected type
             selectedClientAcc = bankAccounts.get(0);
             selectedBankType = selectedClientAcc.getBank().getType();
         }
@@ -49,32 +45,12 @@ public class ModeBasedBankSelectionStrategy implements BankSelectionStrategy {
         BankService bankService = bankTypeToBankServiceMap.get(selectedBankType);
         bankSelectionResponse.setBankService(bankService);
 
+        log.info("Mode based distribution has selected {} bank", selectedBankType);
         return bankSelectionResponse;
     }
 
     @Override
     public BankSelectionStrategyType strategyType() {
         return BankSelectionStrategyType.MODE_BASED;
-    }
-}
-
-@Configuration
-class ModeToBankConfig {
-
-    @Bean
-    public Map<Mode, BankType> modeToBankTypeMap() {
-        Map<Mode, BankType> modeToBankTypeMap = new EnumMap<>(Mode.class);
-        modeToBankTypeMap.put(Mode.NET_BANKING, BankType.ICICI);
-        modeToBankTypeMap.put(Mode.CREDIT_CARD, BankType.HDFC);
-        return modeToBankTypeMap;
-    }
-
-    @Bean
-    public Map<BankType, BankService> bankTypeToBankServiceMap() {
-        Map<BankType, BankService> modeToBankServiceMap = new EnumMap<>(BankType.class);
-        modeToBankServiceMap.put(BankType.ICICI, new ICICIBankService());
-        modeToBankServiceMap.put(BankType.HDFC, new HDFCBankService());
-        modeToBankServiceMap.put(BankType.SBI, new SBIBankService());
-        return modeToBankServiceMap;
     }
 }
