@@ -71,10 +71,7 @@ public class PaymentServiceImpl implements PaymentService {
         ClientBankAccount acquiringAccount = bankSelectionResponse.getSelectedAccount();
         PaymentBankResponse paymentBankResponse = bankService.makePayment(issuingAccount, acquiringAccount, amount);
 
-        Transaction transaction = null;
-        if (paymentBankResponse.isStatus()) {
-            transaction = transactionRepository.saveTransaction(issuingAccount, acquiringAccount, amount);
-        }
+        Transaction transaction = transactionRepository.saveTransaction(issuingAccount, acquiringAccount, amount);
         return transaction;
     }
 

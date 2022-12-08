@@ -108,7 +108,7 @@ public class PaymentGatewayApplication {
 		// distribution
 		List<String> distribution = paymentService.showDistribution();
 		log.info("distribution:- ");
-		distribution.forEach(dist -> log.info(dist));
+		distribution.forEach(log::info);
 
 		// make payment
 		PaymentIssuingAccount issuer = PaymentIssuingAccount
