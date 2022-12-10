@@ -2,7 +2,6 @@ package com.phonepe.paymentgateway.bank;
 
 import com.phonepe.paymentgateway.client.ClientBankAccount;
 import com.phonepe.paymentgateway.payment.PaymentIssuingAccount;
-import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 

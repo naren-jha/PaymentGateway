@@ -39,7 +39,7 @@ public class PaymentGatewayApplication {
 		// Client operations
 		Set<Mode> modeOfPayments = new HashSet<>();
 		modeOfPayments.add(Mode.CREDIT_CARD);
-		modeOfPayments.add(Mode.DEBIT_CARD);
+		modeOfPayments.add(Mode.NET_BANKING);
 
 		List<ClientBankAccount> clientAccounts = Arrays.asList(
 				new ClientBankAccount(0L, new Bank(0L, "HDFC Bank", BankType.HDFC), "123", "Flipkart Corp", "Kormangala, Bangalore", "ABC123"),

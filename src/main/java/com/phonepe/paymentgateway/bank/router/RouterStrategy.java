@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface RouterStrategy {
 
-    RouterResponse selectBank(Mode mode, List<ClientBankAccount> bankAccounts);
+    RouterStrategyResponse selectBank(Mode mode, List<ClientBankAccount> bankAccounts);
     RouterStrategyType strategyType();
 }

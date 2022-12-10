@@ -5,7 +5,7 @@ import com.phonepe.paymentgateway.client.ClientBankAccount;
 import lombok.Data;
 
 @Data
-public class RouterResponse {
+public class RouterStrategyResponse {
     private ClientBankAccount selectedAccount;
     private BankService bankService;
 }

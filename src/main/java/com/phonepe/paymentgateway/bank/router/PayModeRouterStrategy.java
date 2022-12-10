@@ -14,7 +14,7 @@ import java.util.*;
 @Slf4j
 @Component
 @Data
-public class PayModeBasedRouterStrategy implements RouterStrategy {
+public class PayModeRouterStrategy implements RouterStrategy {
 
     @Autowired
     private Map<BankType, BankService> bankTypeToBankServiceMap;
@@ -23,14 +23,17 @@ public class PayModeBasedRouterStrategy implements RouterStrategy {
     private Map<Mode, BankType> modeToBankTypeMap;
 
     @Override
-    public RouterResponse selectBank(Mode mode, List<ClientBankAccount> bankAccounts) {
-        log.info("Applying mode based bank selection strategy");
+    public RouterStrategyResponse selectBank(Mode mode, List<ClientBankAccount> bankAccounts) {
+        log.info("Applying payment-mode based router strategy");
         Map<BankType, ClientBankAccount> bankTypeToAccountMap = new HashMap<>();
         bankAccounts.forEach(acc -> bankTypeToAccountMap.put(acc.getBank().getType(), acc));
 
-        RouterResponse bankSelectionResponse = new RouterResponse();
+        RouterStrategyResponse bankSelectionResponse = new RouterStrategyResponse();
         BankType selectedBankType = modeToBankTypeMap.get(mode);
-        if (Objects.isNull(selectedBankType)) selectedBankType = BankType.SBI; // default bank
+        if (Objects.isNull(selectedBankType)) {
+            log.info("No config provided for mode based selection for payment mode {}. Choosing default bank SBI", mode);
+            selectedBankType = BankType.SBI; // default bank
+        }
 
         // set acquiring bank account of client
         ClientBankAccount selectedClientAcc = bankTypeToAccountMap.get(selectedBankType);
@@ -45,7 +48,7 @@ public class PayModeBasedRouterStrategy implements RouterStrategy {
         BankService bankService = bankTypeToBankServiceMap.get(selectedBankType);
         bankSelectionResponse.setBankService(bankService);
 
-        log.info("Mode based distribution has selected {} bank", selectedBankType);
+        log.info("Mode based router has selected {} bank", selectedBankType);
         return bankSelectionResponse;
     }
 

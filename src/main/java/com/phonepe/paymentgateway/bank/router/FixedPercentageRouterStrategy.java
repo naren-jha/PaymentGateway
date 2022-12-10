@@ -16,7 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 @Component
 @Data
-public class PercentageBasedRouterStrategy implements RouterStrategy {
+public class FixedPercentageRouterStrategy implements RouterStrategy {
 
     @Autowired
     private Map<BankType, Integer> bankToPercentageMap;
@@ -25,8 +25,8 @@ public class PercentageBasedRouterStrategy implements RouterStrategy {
     private Map<BankType, BankService> bankTypeToBankServiceMap;
 
     @Override
-    public RouterResponse selectBank(Mode mode, List<ClientBankAccount> bankAccounts) {
-        log.info("Applying percentage based bank selection strategy");
+    public RouterStrategyResponse selectBank(Mode mode, List<ClientBankAccount> bankAccounts) {
+        log.info("Applying percentage based router strategy");
         Map<BankType, ClientBankAccount> bankTypeToAccountMap = new HashMap<>();
         bankAccounts.forEach(acc -> bankTypeToAccountMap.put(acc.getBank().getType(), acc));
 
@@ -54,7 +54,7 @@ public class PercentageBasedRouterStrategy implements RouterStrategy {
             }
         }
 
-        RouterResponse bankSelectionResponse = new RouterResponse();
+        RouterStrategyResponse bankSelectionResponse = new RouterStrategyResponse();
         // set acquiring bank account of client
         ClientBankAccount selectedClientAcc = bankTypeToAccountMap.get(selectedBankType);
         if (Objects.isNull(selectedClientAcc)) {
@@ -68,12 +68,12 @@ public class PercentageBasedRouterStrategy implements RouterStrategy {
         BankService bankService = bankTypeToBankServiceMap.get(selectedBankType);
         bankSelectionResponse.setBankService(bankService);
 
-        log.info("Percentage based distribution has selected {} bank", selectedBankType);
+        log.info("Fixed percentage router distribution has selected {} bank", selectedBankType);
         return bankSelectionResponse;
     }
 
     @Override
     public RouterStrategyType strategyType() {
-        return RouterStrategyType.PERCENTAGE;
+        return RouterStrategyType.FIXED_PERCENTAGE;
     }
 }

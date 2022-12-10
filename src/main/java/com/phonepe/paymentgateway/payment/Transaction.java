@@ -13,6 +13,7 @@ public class Transaction {
     private PaymentIssuingAccount issuingAccount;
     private ClientBankAccount acquiringAccount;
     private Double amount;
+    private Boolean status;
     private String gatewayReferenceNumber;
     private LocalDate createdAt;
 }

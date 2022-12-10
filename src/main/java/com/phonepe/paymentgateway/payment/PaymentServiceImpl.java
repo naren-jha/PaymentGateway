@@ -3,14 +3,15 @@ package com.phonepe.paymentgateway.payment;
 import com.phonepe.paymentgateway.bank.BankService;
 import com.phonepe.paymentgateway.bank.BankType;
 import com.phonepe.paymentgateway.bank.PaymentBankResponse;
-import com.phonepe.paymentgateway.bank.router.RouterResponse;
-import com.phonepe.paymentgateway.bank.router.RouterFactory;
+import com.phonepe.paymentgateway.bank.router.RouterStrategyResponse;
+import com.phonepe.paymentgateway.bank.router.RouterStrategyFactory;
 import com.phonepe.paymentgateway.bank.router.RouterStrategyType;
 import com.phonepe.paymentgateway.client.ClientBankAccount;
 import com.phonepe.paymentgateway.client.Client;
 import com.phonepe.paymentgateway.client.ClientService;
 import com.phonepe.paymentgateway.exception.ClientNotFoundException;
 import com.phonepe.paymentgateway.exception.InvalidPaymentInputException;
+import com.phonepe.paymentgateway.exception.PayModeNotSupportedException;
 import com.phonepe.paymentgateway.mode.Mode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
@@ -23,10 +24,10 @@ import java.util.*;
 @Slf4j
 public class PaymentServiceImpl implements PaymentService {
 
-    private final RouterStrategyType bankSelectionStrategyType = RouterStrategyType.PERCENTAGE;
+    private final RouterStrategyType bankSelectionStrategyType = RouterStrategyType.MODE_BASED;
 
     @Autowired
-    private RouterFactory bankSelectionStrategyFactory;
+    private RouterStrategyFactory bankSelectionStrategyFactory;
 
     @Autowired
     private ClientService clientService;
@@ -55,15 +56,16 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public Transaction makePayment(Mode mode, PaymentIssuingAccount issuingAccount, double amount, Long clientId) {
-        validateRequest(mode, issuingAccount, amount);
+
         Client client = clientService.getById(clientId);
         if (Objects.isNull(client)) {
             log.error("client not registered!");
             throw new ClientNotFoundException("client not found with id " + clientId);
         }
+        validateRequest(mode, client, issuingAccount, amount);
 
         log.info("initiating {} payment for client {}", mode, client.getName());
-        RouterResponse bankSelectionResponse = bankSelectionStrategyFactory
+        RouterStrategyResponse bankSelectionResponse = bankSelectionStrategyFactory
                 .getBankSelectionStrategy(bankSelectionStrategyType)
                 .selectBank(mode, client.getAcquiringBankAccounts());
 
@@ -71,11 +73,14 @@ public class PaymentServiceImpl implements PaymentService {
         ClientBankAccount acquiringAccount = bankSelectionResponse.getSelectedAccount();
         PaymentBankResponse paymentBankResponse = bankService.makePayment(issuingAccount, acquiringAccount, amount);
 
-        Transaction transaction = transactionRepository.saveTransaction(issuingAccount, acquiringAccount, amount);
+        Transaction transaction = transactionRepository.saveTransaction(paymentBankResponse, issuingAccount, acquiringAccount, amount);
         return transaction;
     }
 
-    private void validateRequest(Mode mode, PaymentIssuingAccount issuingAccount, double amount) {
+    private void validateRequest(Mode mode, Client client, PaymentIssuingAccount issuingAccount, double amount) {
+        if (!client.getModeOfPayments().contains(mode)) {
+            throw new PayModeNotSupportedException(mode + " mode is not supported for this client");
+        }
         if (amount <= 0) {
             throw new InvalidPaymentInputException("amount should be positive!");
         }

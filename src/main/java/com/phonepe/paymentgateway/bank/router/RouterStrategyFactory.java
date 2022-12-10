@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 @Component
-public class RouterFactory {
+public class RouterStrategyFactory {
 
     @Autowired
     private Map<RouterStrategyType, RouterStrategy> bankSelectionStrategies;
