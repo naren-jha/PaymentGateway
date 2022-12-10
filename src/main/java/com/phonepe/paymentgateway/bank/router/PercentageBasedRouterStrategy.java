@@ -1,4 +1,4 @@
-package com.phonepe.paymentgateway.bank.strategy;
+package com.phonepe.paymentgateway.bank.router;
 
 import com.phonepe.paymentgateway.bank.BankType;
 import com.phonepe.paymentgateway.bank.BankService;
@@ -16,7 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 @Component
 @Data
-public class PercentageBasedBankSelectionStrategy implements BankSelectionStrategy {
+public class PercentageBasedRouterStrategy implements RouterStrategy {
 
     @Autowired
     private Map<BankType, Integer> bankToPercentageMap;
@@ -25,7 +25,7 @@ public class PercentageBasedBankSelectionStrategy implements BankSelectionStrate
     private Map<BankType, BankService> bankTypeToBankServiceMap;
 
     @Override
-    public BankSelectionResponse selectBank(Mode mode, List<ClientBankAccount> bankAccounts) {
+    public RouterResponse selectBank(Mode mode, List<ClientBankAccount> bankAccounts) {
         log.info("Applying percentage based bank selection strategy");
         Map<BankType, ClientBankAccount> bankTypeToAccountMap = new HashMap<>();
         bankAccounts.forEach(acc -> bankTypeToAccountMap.put(acc.getBank().getType(), acc));
@@ -54,7 +54,7 @@ public class PercentageBasedBankSelectionStrategy implements BankSelectionStrate
             }
         }
 
-        BankSelectionResponse bankSelectionResponse = new BankSelectionResponse();
+        RouterResponse bankSelectionResponse = new RouterResponse();
         // set acquiring bank account of client
         ClientBankAccount selectedClientAcc = bankTypeToAccountMap.get(selectedBankType);
         if (Objects.isNull(selectedClientAcc)) {
@@ -73,7 +73,7 @@ public class PercentageBasedBankSelectionStrategy implements BankSelectionStrate
     }
 
     @Override
-    public BankSelectionStrategyType strategyType() {
-        return BankSelectionStrategyType.PERCENTAGE;
+    public RouterStrategyType strategyType() {
+        return RouterStrategyType.PERCENTAGE;
     }
 }

@@ -1,12 +1,11 @@
-package com.phonepe.paymentgateway.bank.strategy;
+package com.phonepe.paymentgateway.bank.router;
 
 import com.phonepe.paymentgateway.bank.BankService;
 import com.phonepe.paymentgateway.client.ClientBankAccount;
-import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class BankSelectionResponse {
+public class RouterResponse {
     private ClientBankAccount selectedAccount;
     private BankService bankService;
 }

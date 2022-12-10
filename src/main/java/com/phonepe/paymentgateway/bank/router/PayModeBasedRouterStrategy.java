@@ -1,4 +1,4 @@
-package com.phonepe.paymentgateway.bank.strategy;
+package com.phonepe.paymentgateway.bank.router;
 
 import com.phonepe.paymentgateway.bank.BankType;
 import com.phonepe.paymentgateway.bank.BankService;
@@ -14,7 +14,7 @@ import java.util.*;
 @Slf4j
 @Component
 @Data
-public class ModeBasedBankSelectionStrategy implements BankSelectionStrategy {
+public class PayModeBasedRouterStrategy implements RouterStrategy {
 
     @Autowired
     private Map<BankType, BankService> bankTypeToBankServiceMap;
@@ -23,12 +23,12 @@ public class ModeBasedBankSelectionStrategy implements BankSelectionStrategy {
     private Map<Mode, BankType> modeToBankTypeMap;
 
     @Override
-    public BankSelectionResponse selectBank(Mode mode, List<ClientBankAccount> bankAccounts) {
+    public RouterResponse selectBank(Mode mode, List<ClientBankAccount> bankAccounts) {
         log.info("Applying mode based bank selection strategy");
         Map<BankType, ClientBankAccount> bankTypeToAccountMap = new HashMap<>();
         bankAccounts.forEach(acc -> bankTypeToAccountMap.put(acc.getBank().getType(), acc));
 
-        BankSelectionResponse bankSelectionResponse = new BankSelectionResponse();
+        RouterResponse bankSelectionResponse = new RouterResponse();
         BankType selectedBankType = modeToBankTypeMap.get(mode);
         if (Objects.isNull(selectedBankType)) selectedBankType = BankType.SBI; // default bank
 
@@ -50,7 +50,7 @@ public class ModeBasedBankSelectionStrategy implements BankSelectionStrategy {
     }
 
     @Override
-    public BankSelectionStrategyType strategyType() {
-        return BankSelectionStrategyType.MODE_BASED;
+    public RouterStrategyType strategyType() {
+        return RouterStrategyType.MODE_BASED;
     }
 }

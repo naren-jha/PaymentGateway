@@ -3,9 +3,9 @@ package com.phonepe.paymentgateway.payment;
 import com.phonepe.paymentgateway.bank.BankService;
 import com.phonepe.paymentgateway.bank.BankType;
 import com.phonepe.paymentgateway.bank.PaymentBankResponse;
-import com.phonepe.paymentgateway.bank.strategy.BankSelectionResponse;
-import com.phonepe.paymentgateway.bank.strategy.BankSelectionStrategyFactory;
-import com.phonepe.paymentgateway.bank.strategy.BankSelectionStrategyType;
+import com.phonepe.paymentgateway.bank.router.RouterResponse;
+import com.phonepe.paymentgateway.bank.router.RouterFactory;
+import com.phonepe.paymentgateway.bank.router.RouterStrategyType;
 import com.phonepe.paymentgateway.client.ClientBankAccount;
 import com.phonepe.paymentgateway.client.Client;
 import com.phonepe.paymentgateway.client.ClientService;
@@ -23,10 +23,10 @@ import java.util.*;
 @Slf4j
 public class PaymentServiceImpl implements PaymentService {
 
-    private final BankSelectionStrategyType bankSelectionStrategyType = BankSelectionStrategyType.PERCENTAGE;
+    private final RouterStrategyType bankSelectionStrategyType = RouterStrategyType.PERCENTAGE;
 
     @Autowired
-    private BankSelectionStrategyFactory bankSelectionStrategyFactory;
+    private RouterFactory bankSelectionStrategyFactory;
 
     @Autowired
     private ClientService clientService;
@@ -63,7 +63,7 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         log.info("initiating {} payment for client {}", mode, client.getName());
-        BankSelectionResponse bankSelectionResponse = bankSelectionStrategyFactory
+        RouterResponse bankSelectionResponse = bankSelectionStrategyFactory
                 .getBankSelectionStrategy(bankSelectionStrategyType)
                 .selectBank(mode, client.getAcquiringBankAccounts());
 

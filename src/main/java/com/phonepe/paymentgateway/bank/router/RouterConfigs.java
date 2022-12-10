@@ -1,4 +1,4 @@
-package com.phonepe.paymentgateway.bank.strategy;
+package com.phonepe.paymentgateway.bank.router;
 
 import com.phonepe.paymentgateway.bank.BankType;
 import com.phonepe.paymentgateway.bank.BankService;
@@ -13,7 +13,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 @Configuration
-public class SelectorConfigs {
+public class RouterConfigs {
     @Bean
     public Map<Mode, BankType> modeToBankTypeMap() {
         Map<Mode, BankType> modeToBankTypeMap = new EnumMap<>(Mode.class);
