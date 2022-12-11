@@ -1,5 +1,6 @@
 package com.phonepe.paymentgateway.payment;
 
+import com.phonepe.paymentgateway.bank.router.RouterStrategyType;
 import com.phonepe.paymentgateway.client.ClientBankAccount;
 import lombok.Builder;
 import lombok.Data;
@@ -16,4 +17,5 @@ public class Transaction {
     private Boolean status;
     private String gatewayReferenceNumber;
     private LocalDate createdAt;
+    private RouterStrategyType routerType;
 }

@@ -2,6 +2,7 @@ package com.phonepe.paymentgateway.payment;
 
 import com.phonepe.paymentgateway.bank.BankType;
 import com.phonepe.paymentgateway.bank.PaymentBankResponse;
+import com.phonepe.paymentgateway.bank.router.RouterStrategyType;
 import com.phonepe.paymentgateway.client.ClientBankAccount;
 import org.springframework.stereotype.Repository;
 
@@ -15,7 +16,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     private Map<Long, Transaction> transactions = new HashMap<>();
 
     @Override
-    public Transaction saveTransaction(PaymentBankResponse paymentBankResponse, PaymentIssuingAccount issuingAccount, ClientBankAccount acquiringAccount, Double amount) {
+    public Transaction saveTransaction(PaymentBankResponse paymentBankResponse, RouterStrategyType routerType, PaymentIssuingAccount issuingAccount, ClientBankAccount acquiringAccount, Double amount) {
         Long transactionId = Long.valueOf(transactions.size());
         Transaction transaction = Transaction
                 .builder()
@@ -25,6 +26,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
                 .amount(amount)
                 .status(paymentBankResponse.isStatus())
                 .createdAt(LocalDate.now())
+                .routerType(routerType)
                 .build();
 
         transactions.put(transactionId, transaction);

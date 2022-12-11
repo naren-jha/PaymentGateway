@@ -2,6 +2,7 @@ package com.phonepe.paymentgateway;
 
 import com.phonepe.paymentgateway.bank.Bank;
 import com.phonepe.paymentgateway.bank.BankType;
+import com.phonepe.paymentgateway.bank.router.RouterStrategyType;
 import com.phonepe.paymentgateway.client.Client;
 import com.phonepe.paymentgateway.client.ClientBankAccount;
 import com.phonepe.paymentgateway.client.ClientService;
@@ -115,8 +116,12 @@ public class PaymentGatewayApplication {
 				.builder()
 				.nbUserName("testuser")
 				.nbPassword("abc123")
+				.cardNum("1230-4560-7890-8675")
+				.cardExpiryDate("31/01/2025")
+				.cardCvv("567")
+				.upiId("testuser@okhdfcbank")
 				.build();
-		paymentService.makePayment(Mode.NET_BANKING, issuer, 100.50, flipkartClient.getId());
+		paymentService.makePayment(Mode.NET_BANKING, RouterStrategyType.MODE_BASED, issuer, 100.50, flipkartClient.getId());
 	}
 
 }

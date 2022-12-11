@@ -24,7 +24,7 @@ import java.util.*;
 @Slf4j
 public class PaymentServiceImpl implements PaymentService {
 
-    private final RouterStrategyType bankSelectionStrategyType = RouterStrategyType.MODE_BASED;
+    private final RouterStrategyType routerStrategy = RouterStrategyType.MODE_BASED;
 
     @Autowired
     private RouterStrategyFactory bankSelectionStrategyFactory;
@@ -55,7 +55,13 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Transaction makePayment(Mode mode, PaymentIssuingAccount issuingAccount, double amount, Long clientId) {
+    public Transaction makePayment(Mode mode, RouterStrategyType routerType, PaymentIssuingAccount issuingAccount, double amount, Long clientId) {
+
+        // set default router strategy if not provided by client
+        if (Objects.isNull(routerType)) {
+            log.info("opting for default router strategy MODE_BASED since one was not provided in client request");
+            routerType = RouterStrategyType.MODE_BASED;
+        }
 
         Client client = clientService.getById(clientId);
         if (Objects.isNull(client)) {
@@ -66,14 +72,14 @@ public class PaymentServiceImpl implements PaymentService {
 
         log.info("initiating {} payment for client {}", mode, client.getName());
         RouterStrategyResponse bankSelectionResponse = bankSelectionStrategyFactory
-                .getBankSelectionStrategy(bankSelectionStrategyType)
+                .getBankSelectionStrategy(routerType)
                 .selectBank(mode, client.getAcquiringBankAccounts());
 
         BankService bankService = bankSelectionResponse.getBankService();
         ClientBankAccount acquiringAccount = bankSelectionResponse.getSelectedAccount();
         PaymentBankResponse paymentBankResponse = bankService.makePayment(issuingAccount, acquiringAccount, amount);
 
-        Transaction transaction = transactionRepository.saveTransaction(paymentBankResponse, issuingAccount, acquiringAccount, amount);
+        Transaction transaction = transactionRepository.saveTransaction(paymentBankResponse, routerType, issuingAccount, acquiringAccount, amount);
         return transaction;
     }
 

@@ -24,7 +24,7 @@ public class PayModeRouterStrategy implements RouterStrategy {
 
     @Override
     public RouterStrategyResponse selectBank(Mode mode, List<ClientBankAccount> bankAccounts) {
-        log.info("Applying payment-mode based router strategy");
+        log.info("Applying mode based router strategy");
         Map<BankType, ClientBankAccount> bankTypeToAccountMap = new HashMap<>();
         bankAccounts.forEach(acc -> bankTypeToAccountMap.put(acc.getBank().getType(), acc));
 

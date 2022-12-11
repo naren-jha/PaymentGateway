@@ -18,7 +18,8 @@ public class RouterConfigs {
     public Map<Mode, BankType> modeToBankTypeMap() {
         Map<Mode, BankType> modeToBankTypeMap = new EnumMap<>(Mode.class);
         modeToBankTypeMap.put(Mode.NET_BANKING, BankType.ICICI); // All NET_BANKING transactions will go to ICICI Bank
-        modeToBankTypeMap.put(Mode.CREDIT_CARD, BankType.HDFC); // All CREDIT_CARD transactions will go to ICICI Bank
+        modeToBankTypeMap.put(Mode.CREDIT_CARD, BankType.HDFC); // All CREDIT_CARD transactions will go to HDFC Bank
+        modeToBankTypeMap.put(Mode.DEBIT_CARD, BankType.SBI); // All DEBIT_CARD transactions will go to HDFC Bank
         return modeToBankTypeMap;
     }
 

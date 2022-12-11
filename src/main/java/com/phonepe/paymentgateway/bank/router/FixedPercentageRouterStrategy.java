@@ -26,7 +26,7 @@ public class FixedPercentageRouterStrategy implements RouterStrategy {
 
     @Override
     public RouterStrategyResponse selectBank(Mode mode, List<ClientBankAccount> bankAccounts) {
-        log.info("Applying percentage based router strategy");
+        log.info("Applying fixed percentage based router strategy");
         Map<BankType, ClientBankAccount> bankTypeToAccountMap = new HashMap<>();
         bankAccounts.forEach(acc -> bankTypeToAccountMap.put(acc.getBank().getType(), acc));
 
