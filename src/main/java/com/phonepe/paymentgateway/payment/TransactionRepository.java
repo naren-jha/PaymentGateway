@@ -8,6 +8,6 @@ import com.phonepe.paymentgateway.client.ClientBankAccount;
 import java.util.Map;
 
 public interface TransactionRepository {
-    Transaction saveTransaction(PaymentBankResponse paymentBankResponse, RouterStrategyType routerType, PaymentIssuingAccount issuingAccount, ClientBankAccount acquiringAccount, Double amount);
+    Transaction saveTransaction(Transaction transaction);
     Map<BankType, int[]> getSuccessAndFailureCounts();
 }

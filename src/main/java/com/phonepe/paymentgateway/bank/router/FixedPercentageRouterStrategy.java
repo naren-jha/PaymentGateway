@@ -43,7 +43,7 @@ public class FixedPercentageRouterStrategy implements RouterStrategy {
             bankToRangeMap.put(bankType, range);
             min = max;
         }
-        // bankToRangeMap = {ICICI: 4, HDFC: 7, SBI: 10}
+        // bankToRangeMap = {ICICI: 0-4, HDFC: 4-7, SBI: 7-10}
 
         BankType selectedBankType = BankType.HDFC;
         int randomNumber = ThreadLocalRandom.current().nextInt(0, 10);

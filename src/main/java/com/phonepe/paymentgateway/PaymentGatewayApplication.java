@@ -121,7 +121,17 @@ public class PaymentGatewayApplication {
 				.cardCvv("567")
 				.upiId("testuser@okhdfcbank")
 				.build();
-		paymentService.makePayment(Mode.NET_BANKING, RouterStrategyType.MODE_BASED, issuer, 100.50, flipkartClient.getId());
+//		paymentService.makePayment(Mode.NET_BANKING, RouterStrategyType.MODE_BASED, issuer, 100.50, flipkartClient.getId());
+//		paymentService.makePayment(Mode.NET_BANKING, RouterStrategyType.FIXED_PERCENTAGE, issuer, 100.50, flipkartClient.getId());
+//		paymentService.makePayment(Mode.NET_BANKING, RouterStrategyType.FIXED_PERCENTAGE, issuer, 100.50, flipkartClient.getId());
+
+		paymentService.makePayment(Mode.NET_BANKING, RouterStrategyType.ERROR_PERCENTAGE, issuer, 100.50, flipkartClient.getId());
+		paymentService.makePayment(Mode.NET_BANKING, RouterStrategyType.ERROR_PERCENTAGE, issuer, 100.50, flipkartClient.getId());
+		paymentService.makePayment(Mode.NET_BANKING, RouterStrategyType.ERROR_PERCENTAGE, issuer, 100.50, flipkartClient.getId());
+		paymentService.makePayment(Mode.NET_BANKING, RouterStrategyType.ERROR_PERCENTAGE, issuer, 100.50, flipkartClient.getId());
+		paymentService.makePayment(Mode.NET_BANKING, RouterStrategyType.ERROR_PERCENTAGE, issuer, 100.50, flipkartClient.getId());
+		paymentService.makePayment(Mode.NET_BANKING, RouterStrategyType.ERROR_PERCENTAGE, issuer, 100.50, flipkartClient.getId());
+		paymentService.makePayment(Mode.NET_BANKING, RouterStrategyType.ERROR_PERCENTAGE, issuer, 100.50, flipkartClient.getId());
 	}
 
 }

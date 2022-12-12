@@ -16,19 +16,9 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     private Map<Long, Transaction> transactions = new HashMap<>();
 
     @Override
-    public Transaction saveTransaction(PaymentBankResponse paymentBankResponse, RouterStrategyType routerType, PaymentIssuingAccount issuingAccount, ClientBankAccount acquiringAccount, Double amount) {
+    public Transaction saveTransaction(Transaction transaction) {
         Long transactionId = Long.valueOf(transactions.size());
-        Transaction transaction = Transaction
-                .builder()
-                .id(transactionId)
-                .issuingAccount(issuingAccount)
-                .acquiringAccount(acquiringAccount)
-                .amount(amount)
-                .status(paymentBankResponse.isStatus())
-                .createdAt(LocalDate.now())
-                .routerType(routerType)
-                .build();
-
+        transaction.setId(transactionId);
         transactions.put(transactionId, transaction);
         return transaction;
     }

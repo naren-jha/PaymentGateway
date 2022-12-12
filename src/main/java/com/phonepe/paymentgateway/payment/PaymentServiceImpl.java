@@ -18,6 +18,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -79,7 +80,18 @@ public class PaymentServiceImpl implements PaymentService {
         ClientBankAccount acquiringAccount = bankSelectionResponse.getSelectedAccount();
         PaymentBankResponse paymentBankResponse = bankService.makePayment(issuingAccount, acquiringAccount, amount);
 
-        Transaction transaction = transactionRepository.saveTransaction(paymentBankResponse, routerType, issuingAccount, acquiringAccount, amount);
+        // save transaction
+        // TODO: maybe create a transactionService and then call transactionService.saveTransaction(transaction)
+        Transaction transaction = Transaction
+                .builder()
+                .issuingAccount(issuingAccount)
+                .acquiringAccount(acquiringAccount)
+                .amount(amount)
+                .status(paymentBankResponse.isStatus())
+                .createdAt(LocalDate.now())
+                .routerType(routerType)
+                .build();
+        transactionRepository.saveTransaction(transaction);
         return transaction;
     }
 
